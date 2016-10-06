@@ -16,6 +16,9 @@ ifneq ($(TARGET_HAS_LEGACY_CAMERA_HAL1), true)
 
 LOCAL_PATH:= $(call my-dir)
 
+ifeq ($(TARGET_HAS_LEGACY_CAMERA_HAL1),true)
+$(warning Target has integrated cameraserver into mediaserver. This is weakening security measures introduced in 7.0)
+else
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
