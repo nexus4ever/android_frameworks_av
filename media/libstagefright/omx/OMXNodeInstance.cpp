@@ -1379,22 +1379,47 @@ status_t OMXNodeInstance::allocateBufferWithBackup(
 #endif
         return BAD_VALUE;
     }
-#ifndef METADATA_CAMERA_SOURCE
-    // metadata buffers are not connected cross process; only copy if not meta
-    bool copy = mMetadataType[portIndex] == kMetadataBufferTypeInvalid;
 
-    BufferMeta *buffer_meta = new BufferMeta(
-            params, portIndex,
-            (portIndex == kPortIndexInput) && copy /* copyToOmx */,
-            (portIndex == kPortIndexOutput) && copy /* copyFromOmx */,
-            NULL /* data */);
+#ifndef METADATA_CAMERA_SOURCE
+    // metadata buffers are not connected cross process
+    // use a backup buffer instead of the actual buffer
+    BufferMeta *buffer_meta;
+    bool useBackup = mMetadataType[portIndex] != kMetadataBufferTypeInvalid;
+    OMX_U8 *data = static_cast<OMX_U8 *>(params->pointer());
+    // allocate backup buffer
+    if (useBackup) {
+        data = new (std::nothrow) OMX_U8[allottedSize];
+        if (data == NULL) {
+            return NO_MEMORY;
+        }
+        memset(data, 0, allottedSize);
+
+        // if we are not connecting the buffers, the sizes must match
+        if (allottedSize != params->size()) {
+            CLOG_ERROR(useBuffer, BAD_VALUE, SIMPLE_BUFFER(portIndex, (size_t)allottedSize, data));
+            delete[] data;
+            return BAD_VALUE;
+        }
+
+        buffer_meta = new BufferMeta(
+                params, portIndex, false /* copyToOmx */, false /* copyFromOmx */, data);
+    } else {
+        buffer_meta = new BufferMeta(
+                params, portIndex, false /* copyToOmx */, false /* copyFromOmx */, NULL);
+    }
+
 #else
-    BufferMeta *buffer_meta = new BufferMeta(params, portIndex, true);
+    BufferMeta *buffer_meta = new BufferMeta(params, portIndex);
 #endif
     OMX_BUFFERHEADERTYPE *header;
 
-    OMX_ERRORTYPE err = OMX_AllocateBuffer(
-            mHandle, &header, portIndex, buffer_meta, allottedSize);
+    OMX_ERRORTYPE err = OMX_UseBuffer(
+            mHandle, &header, portIndex, buffer_meta,
+#ifndef METADATA_CAMERA_SOURCE
+            allottedSize, data);
+#else
+            allottedSize, static_cast<OMX_U8 *>(params->pointer()));
+#endif
     if (err != OMX_ErrorNone) {
         CLOG_ERROR(allocateBufferWithBackup, err,
                 SIMPLE_BUFFER(portIndex, (size_t)allottedSize, params->pointer()));
