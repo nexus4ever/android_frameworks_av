@@ -916,7 +916,7 @@ Status CameraService::getLegacyParametersLazy(int cameraId,
 static bool isTrustedCallingUid(uid_t uid) {
     switch (uid) {
         case AID_MEDIA:        // mediaserver
-#ifndef NO_CAMERA_SERVER
+#ifdef NO_CAMERA_SERVER
         case AID_CAMERASERVER: // cameraserver
 #endif
         case AID_RADIO:        // telephony
@@ -2186,7 +2186,7 @@ status_t CameraService::BasicClient::startCameraOps() {
             mClientPackageName, mOpsCallback);
     res = mAppOpsManager.startOp(AppOpsManager::OP_CAMERA,
             mClientUid, mClientPackageName);
-
+#if 0
     if (res == AppOpsManager::MODE_ERRORED) {
         ALOGI("Camera %d: Access for \"%s\" has been revoked",
                 mCameraId, String8(mClientPackageName).string());
@@ -2199,7 +2199,7 @@ status_t CameraService::BasicClient::startCameraOps() {
         // Return the same error as for device policy manager rejection
         return -EACCES;
     }
-
+#endif
     mOpsActive = true;
 
     // Transition device availability listeners from PRESENT -> NOT_AVAILABLE
