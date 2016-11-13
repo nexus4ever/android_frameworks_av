@@ -2184,7 +2184,7 @@ status_t CameraService::BasicClient::startCameraOps() {
             mClientPackageName, mOpsCallback);
     res = mAppOpsManager.startOp(AppOpsManager::OP_CAMERA,
             mClientUid, mClientPackageName);
-
+#if 0
     if (res == AppOpsManager::MODE_ERRORED) {
         ALOGI("Camera %d: Access for \"%s\" has been revoked",
                 mCameraId, String8(mClientPackageName).string());
@@ -2197,7 +2197,7 @@ status_t CameraService::BasicClient::startCameraOps() {
         // Return the same error as for device policy manager rejection
         return -EACCES;
     }
-
+#endif
     mOpsActive = true;
 
     // Transition device availability listeners from PRESENT -> NOT_AVAILABLE
