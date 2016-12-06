@@ -202,6 +202,7 @@ struct BufferMeta {
         delete[] mBackup;
     }
 #endif
+
 private:
     sp<GraphicBuffer> mGraphicBuffer;
     sp<NativeHandle> mNativeHandle;
@@ -498,6 +499,7 @@ status_t OMXNodeInstance::getParameter(
         return BAD_INDEX;
     }
 #endif
+
     OMX_ERRORTYPE err = OMX_GetParameter(mHandle, index, params);
     OMX_INDEXEXTTYPE extIndex = (OMX_INDEXEXTTYPE)index;
     // some errors are expected for getParameter
