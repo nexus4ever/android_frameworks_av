@@ -29,7 +29,7 @@
 #include <utils/RefBase.h>
 #include <utils/String16.h>
 #ifndef METADATA_CAMERA_SOURCE
-#include <MetadataBufferType.h>
+#include <media/hardware/MetadataBufferType.h>
 #endif
 
 namespace android {

@@ -26,7 +26,7 @@
 #include <media/stagefright/MediaBuffer.h>
 
 #ifndef METADATA_CAMERA_SOURCE
-#include <MetadataBufferType.h>
+#include <media/hardware/MetadataBufferType.h>
 #endif
 
 #include "foundation/ABase.h"

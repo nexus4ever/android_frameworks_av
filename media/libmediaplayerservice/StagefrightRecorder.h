@@ -25,7 +25,7 @@
 #include <system/audio.h>
 
 #ifndef METADATA_CAMERA_SOURCE
-#include <MetadataBufferType.h>
+#include <media/hardware/MetadataBufferType.h>
 #endif
 
 namespace android {
